@@ -32,6 +32,7 @@ namespace WebFilterTest
 
         public void ChromiumWebBrowser_TitleChanged(object sender, TitleChangedEventArgs e)
         {
+            if (IsDisposed) { return; };
             //setText(e.Title, null);
             var tabpage = (TabPage)((ChromiumWebBrowser)sender).Parent;
             if (tabpage == null) return;
@@ -43,6 +44,7 @@ namespace WebFilterTest
 
         public void ChromiumWebBrowser_AddressChanged(object sender, AddressChangedEventArgs e)
         {
+            if(IsDisposed){ return; }
             //setText(null,e.Address);
             var tabpage = (TabPage)((ChromiumWebBrowser)sender).Parent;
             if (tabpage == null) return;
@@ -152,6 +154,7 @@ namespace WebFilterTest
         private void Form2_FormClosing(object sender, FormClosingEventArgs e)
         {
             removeAll(this);
+            Url = null;
         }
         private void removeAll(Control control) {
             
@@ -192,6 +195,13 @@ namespace WebFilterTest
                 item.Dispose();
                 break;
             }
+        }
+
+        public void TabRemoveIndex(int index) {
+            if(tabControl1.TabPages.Count<=index) return;
+            var item = tabControl1.TabPages[index];
+            removeAll(item);
+            item.Dispose();
         }
     }
 

@@ -246,21 +246,52 @@ namespace WebFilterTest
             if (listBox1.SelectedItem == null) return;
 
             var obj = (ListObj)listBox1.SelectedItem;
-            if (obj.Url == noOpen?.Url) {
-                noOpen.WindowState = FormWindowState.Maximized;
-                noOpen.Show();
-                noOpen.Opacity = 1;
-                noOpen = null;
-                return;
-            };
-            if (noOpen != null) {
-                noOpen.Dispose();
+            var nourl = noOpen?.Url;
+            var isDisposed = noOpen?.IsDisposed ?? true;
+            var noVisble = noOpen?.Visible??false;
+            if (isDisposed || !noVisble) {
+                noOpen?.Close();
+                noOpen = new Form2(obj.Title, obj.Url);
             }
-            noOpen = new Form2(obj.Title, obj.Url);
             noOpen.Opacity = 0;
+            var noState = noOpen.WindowState;
             noOpen.WindowState = FormWindowState.Maximized;
             noOpen.Show();
-            noOpen.Hide();
+            if (obj.Url == nourl)
+            {
+                noOpen.Opacity = 1;
+                return;
+            }
+
+
+            if (!noVisble)
+            {
+                noOpen.Visible = false;
+                return;
+                
+            }
+            noOpen.TabRemoveIndex(0);
+            noOpen.AddBrowser(obj.Url);
+            noOpen.Url = obj.Url;
+            
+            noOpen.Opacity = 1;
+            //noOpen.WindowState = noState;
+
+            //if (obj.Url == noOpen?.Url) {
+            //    noOpen.WindowState = FormWindowState.Maximized;
+            //    noOpen.Show();
+            //    noOpen.Opacity = 1;
+            //    noOpen = null;
+            //    return;
+            //};
+            //if (noOpen != null) {
+            //    noOpen.Dispose();
+            //}
+            //noOpen = new Form2(obj.Title, obj.Url);
+            //noOpen.Opacity = 0;
+            //noOpen.WindowState = FormWindowState.Maximized;
+            //noOpen.Show();
+            //noOpen.Hide();
         }
 
         delegate void SetPross(int value, int max);
