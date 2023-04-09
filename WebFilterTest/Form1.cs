@@ -28,7 +28,7 @@ namespace WebFilterTest
         {
             if (listBox1.SelectedItem == null) return;
             var obj = (ListObj)listBox1.SelectedItem;
-            Clipboard.SetText(obj.Url);
+            Clipboard.SetText(obj.Url.ReplaceDomain());
         }
 
         Regex regmain = new Regex(@"\<tbody[^\>]+?id\=""normalthread.+?\</tbody\>", RegexOptions.IgnoreCase | RegexOptions.Singleline);
@@ -97,7 +97,7 @@ namespace WebFilterTest
 
                 try
                 {
-                    var res = HttpGet(String.Format(textBox1.Text, page));
+                    var res = HttpGet(String.Format(textBox1.Text.ReplaceDomain(), page));
                     log.Info($"【数据】线程{strId}============DATA(page:{page})");
                     var str = res.docstr;
 
@@ -140,7 +140,7 @@ namespace WebFilterTest
         {
 
 
-            var res = HttpGet(String.Format(textBox1.Text, 1));
+            var res = HttpGet(String.Format(textBox1.Text.ReplaceDomain(), 1));
             var str = res.docstr;
             var pageres = regpage.Match(str);
             if (!pageres.Success) return;
@@ -168,6 +168,8 @@ namespace WebFilterTest
             http.Method = "GET";
             http.Accept = "*/*";
             http.AllowAutoRedirect = false;
+            http.CookieContainer = new CookieContainer();
+            http.CookieContainer.Add(new Cookie(Conf.CookieName, Conf.CookieValue,"/",Conf.Domain));
             var req = (HttpWebResponse)http.GetResponse();
             var stream = req.GetResponseStream();
             StreamReader sr = new StreamReader(stream);
@@ -223,7 +225,7 @@ namespace WebFilterTest
         {
             if (listBox1.SelectedItem == null) return;
             var obj = (ListObj)listBox1.SelectedItem;
-            openWeb(obj.Title, obj.Url);
+            openWeb(obj.Title, obj.Url.ReplaceDomain());
         }
 
         Form2 noOpen = null;
@@ -251,13 +253,13 @@ namespace WebFilterTest
             var noVisble = noOpen?.Visible??false;
             if (isDisposed || !noVisble) {
                 noOpen?.Close();
-                noOpen = new Form2(obj.Title, obj.Url);
+                noOpen = new Form2(obj.Title, obj.Url.ReplaceDomain());
             }
             noOpen.Opacity = 0;
             var noState = noOpen.WindowState;
             noOpen.WindowState = FormWindowState.Maximized;
             noOpen.Show();
-            if (obj.Url == nourl)
+            if (obj.Url.ReplaceDomain() == nourl)
             {
                 noOpen.Opacity = 1;
                 return;
@@ -271,8 +273,8 @@ namespace WebFilterTest
                 
             }
             noOpen.TabRemoveIndex(0);
-            noOpen.AddBrowser(obj.Url);
-            noOpen.Url = obj.Url;
+            noOpen.AddBrowser(obj.Url.ReplaceDomain());
+            noOpen.Url = obj.Url.ReplaceDomain();
             
             noOpen.Opacity = 1;
             //noOpen.WindowState = noState;

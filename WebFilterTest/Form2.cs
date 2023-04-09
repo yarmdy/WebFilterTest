@@ -25,9 +25,7 @@ namespace WebFilterTest
             Url = url;
 
             textBox1.Text = url;
-
             AddBrowser(url);
-            
         }
 
         public void ChromiumWebBrowser_TitleChanged(object sender, TitleChangedEventArgs e)
@@ -76,10 +74,17 @@ namespace WebFilterTest
             //settings.CefCommandLineArgs.Add("ppapi_flash_path", AppDomain.CurrentDomain.BaseDirectory+"pepflashplayer.dll");
             //Cef.Initialize(settings);
         }
+        bool cookieSetted=false;
         public TabPage AddBrowser(string url) { 
             var tabPage = new TabPage(url);
             tabPage.Tag = url;
             var browser1 = new ChromiumWebBrowser(url);
+            if (!cookieSetted)
+            {
+                var cookieM = Cef.GetGlobalCookieManager();
+                cookieM.SetCookie(url, new Cookie { Domain = Conf.Domain, Name = Conf.CookieName, Value = Conf.CookieValue });
+                cookieSetted = true;
+            }
             browser1.Name = "browser";
             browser1.AddressChanged += ChromiumWebBrowser_AddressChanged;
             browser1.TitleChanged += ChromiumWebBrowser_TitleChanged;

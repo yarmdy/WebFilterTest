@@ -114,7 +114,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(776, 21);
             this.textBox1.TabIndex = 7;
-            this.textBox1.Text = "https://gfhgfj.biz/forum-2-{0}.html";
+            this.textBox1.Text = "https://www.baidu.com/forum-2-{0}.html";
             // 
             // numericUpDown1
             // 
