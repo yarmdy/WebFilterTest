@@ -180,8 +180,14 @@ namespace WebFilterTest
                 tbounds.Offset(tabControl1.PointToScreen(new Point(0,0)));
                 if (!tbounds.Contains(bounds.X, bounds.Y)) continue;
                 var item = tabControl1.TabPages[i];
+                var isLocal = tabControl1.SelectedTab == item;
                 removeAll(item);
                 item.Dispose();
+                if (isLocal)
+                {
+                    var index = Math.Min(i, tabControl1.TabCount - 1);
+                    tabControl1.SelectedIndex = index;
+                }
                 break;
             }
         }
@@ -196,8 +202,16 @@ namespace WebFilterTest
                 var tboundsf = new RectangleF((float)tbounds.Width - tbounds.Height+tbounds.X, tbounds.Height / 4f+tbounds.Y, tbounds.Height / 2f, tbounds.Height / 2f);
                 if (!tboundsf.Contains(e.X, e.Y)) continue;
                 var item = tabControl1.TabPages[i];
+                var isLocal = tabControl1.SelectedTab==item;
                 removeAll(item);
                 item.Dispose();
+
+                if (isLocal)
+                {
+                    var index = Math.Min(i,tabControl1.TabCount-1);
+                    tabControl1.SelectedIndex = index;
+                }
+                
                 break;
             }
         }
