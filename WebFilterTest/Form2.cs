@@ -5,10 +5,12 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CefSharp;
+using CefSharp.Handler;
 using CefSharp.WinForms;
 
 namespace WebFilterTest
@@ -85,6 +87,7 @@ namespace WebFilterTest
                 cookieM.SetCookie(url, new Cookie { Domain = Conf.Domain, Name = Conf.CookieName, Value = Conf.CookieValue });
                 cookieSetted = true;
             }
+            //browser1.RequestHandler = new MyRequestHandler();
             browser1.Name = "browser";
             browser1.AddressChanged += ChromiumWebBrowser_AddressChanged;
             browser1.TitleChanged += ChromiumWebBrowser_TitleChanged;
@@ -254,6 +257,30 @@ namespace WebFilterTest
 
         donothing:
             return true;
+        }
+    }
+
+    class MyResourceRequestHandler: ResourceRequestHandler
+    {
+        protected override CefReturnValue OnBeforeResourceLoad(IWebBrowser chromiumWebBrowser, IBrowser browser, IFrame frame, IRequest request, IRequestCallback callback)
+        {
+            request.SetHeaderByName("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1", true);
+            //request.SetHeaderByName("Sec-Ch-Ua", "\"Google Chrome\";v=\"117\", \"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"117\"", true);
+            //request.SetHeaderByName("Sec-Ch-Ua-Mobile", "?1", true);
+            //request.SetHeaderByName("Sec-Ch-Ua-Platform", "\"Android\"", true);
+            //request.SetHeaderByName("Accept-Encoding", "gzip, deflate, br", true);
+            //request.SetHeaderByName("Accept-Language", "zh-CN,zh;q=0.9", true);
+            //request.SetHeaderByName("Sec-Fetch-Site", "same-origin", true);
+            //request.SetHeaderByName("Sec-Fetch-User", "?1", true);
+            //request.SetHeaderByName("Upgrade-Insecure-Requests", "1", true);
+            return base.OnBeforeResourceLoad(chromiumWebBrowser, browser, frame, request, callback);
+        }
+    }
+    class MyRequestHandler : RequestHandler
+    {
+        protected override IResourceRequestHandler GetResourceRequestHandler(IWebBrowser chromiumWebBrowser, IBrowser browser, IFrame frame, IRequest request, bool isNavigation, bool isDownload, string requestInitiator, ref bool disableDefaultHandling)
+        {
+            return new MyResourceRequestHandler();
         }
     }
 }
